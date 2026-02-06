@@ -8,84 +8,54 @@
 
 body {
     font-family: 'Share Tech Mono', monospace;
-    background: #000000;
+    background: black;
     color: #00ff00;
     min-height: 100vh;
-    position: relative;
     overflow-x: hidden;
 }
 
-/* Matrix rain background */
+/* GRID BACKGROUND */
 body::before {
     content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        linear-gradient(0deg, transparent 24%, rgba(0, 255, 0, 0.05) 25%, rgba(0, 255, 0, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 0, 0.05) 75%, rgba(0, 255, 0, 0.05) 76%, transparent 77%, transparent),
-        linear-gradient(90deg, transparent 24%, rgba(0, 255, 0, 0.05) 25%, rgba(0, 255, 0, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 0, 0.05) 75%, rgba(0, 255, 0, 0.05) 76%, transparent 77%, transparent);
+    inset: 0;
+    background:
+        linear-gradient(0deg, transparent 24%, rgba(0,255,0,0.05) 25%, rgba(0,255,0,0.05) 26%, transparent 27%),
+        linear-gradient(90deg, transparent 24%, rgba(0,255,0,0.05) 25%, rgba(0,255,0,0.05) 26%, transparent 27%);
     background-size: 50px 50px;
-    z-index: -1;
-    opacity: 0.3;
+    opacity: 0.35;
     animation: gridScroll 20s linear infinite;
+    z-index: -1;
 }
 
 @keyframes gridScroll {
-    0% { background-position: 0 0, 0 0; }
-    100% { background-position: 50px 50px, 50px 50px; }
+    to { background-position: 50px 50px, 50px 50px; }
 }
 
-/* Scanline effect */
+/* SCANLINES */
 body::after {
     content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: linear-gradient(
         to bottom,
         transparent 50%,
-        rgba(0, 255, 0, 0.03) 50%
+        rgba(0,255,0,0.03) 50%
     );
     background-size: 100% 4px;
-    z-index: 9998;
     pointer-events: none;
-    animation: scanline 8s linear infinite;
+    z-index: 9998;
 }
 
-@keyframes scanline {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(4px); }
-}
-
-/* PASSWORD OVERLAY STYLES */
+/* PASSWORD */
 .password-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000000;
+    inset: 0;
+    background: black;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     z-index: 9999;
-    font-family: 'Share Tech Mono', monospace;
-}
-
-.password-overlay::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(0deg, transparent 24%, rgba(0, 255, 0, 0.05) 25%, rgba(0, 255, 0, 0.05) 26%, transparent 27%);
-    background-size: 50px 50px;
-    animation: gridScroll 20s linear infinite;
 }
 
 .password-overlay.hidden {
@@ -93,64 +63,21 @@ body::after {
 }
 
 .password-container {
-    background: rgba(0, 20, 0, 0.9);
     border: 3px solid #00ff00;
     padding: 3rem;
-    position: relative;
-    box-shadow: inset 0 0 30px rgba(0, 255, 0, 0.2), 0 0 50px rgba(0, 255, 0, 0.5);
+    background: rgba(0,15,0,0.95);
+    box-shadow:
+        inset 0 0 30px rgba(0,255,0,0.3),
+        0 0 60px rgba(0,255,0,0.6);
     max-width: 500px;
     width: 90%;
-    animation: borderPulse 2s infinite;
-    z-index: 10000;
+    position: relative;
+    animation: pulse 2.5s infinite;
 }
 
-@keyframes borderPulse {
-    0%, 100% { box-shadow: inset 0 0 30px rgba(0, 255, 0, 0.2), 0 0 50px rgba(0, 255, 0, 0.5); }
-    50% { box-shadow: inset 0 0 30px rgba(0, 255, 0, 0.4), 0 0 70px rgba(0, 255, 0, 0.7); }
-}
-
-.password-container::before {
-    content: '';
-    position: absolute;
-    top: -3px;
-    left: -3px;
-    width: 30px;
-    height: 30px;
-    border-top: 5px solid #00ff00;
-    border-left: 5px solid #00ff00;
-}
-
-.password-container::after {
-    content: '';
-    position: absolute;
-    bottom: -3px;
-    right: -3px;
-    width: 30px;
-    height: 30px;
-    border-bottom: 5px solid #00ff00;
-    border-right: 5px solid #00ff00;
-}
-
-.password-container h2 {
-    color: #00ff00;
-    font-family: 'Orbitron', monospace;
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    text-shadow: 0 0 20px #00ff00;
-    text-align: center;
-}
-
-.password-container p {
-    color: #00cc00;
-    margin-bottom: 2rem;
-    text-align: center;
-    font-size: 0.9rem;
-}
-
-.password-container p::before {
-    content: '> ';
+@keyframes pulse {
+    0%,100% { box-shadow: inset 0 0 30px rgba(0,255,0,0.3), 0 0 60px rgba(0,255,0,0.6); }
+    50% { box-shadow: inset 0 0 40px rgba(0,255,0,0.5), 0 0 80px rgba(0,255,0,0.8); }
 }
 
 .password-input {
@@ -159,63 +86,115 @@ body::after {
     font-size: 2rem;
     text-align: center;
     border: 2px solid #00ff00;
-    background: rgba(0, 0, 0, 0.8);
+    background: black;
     color: #00ff00;
     letter-spacing: 1rem;
     margin-bottom: 1.5rem;
-    outline: none;
-    font-family: 'Share Tech Mono', monospace;
-    box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.3), 0 0 10px rgba(0, 255, 0, 0.3);
-}
-
-.password-input::placeholder {
-    color: rgba(0, 255, 0, 0.3);
-    letter-spacing: 1rem;
-}
-
-.password-input:focus {
-    box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.5), 0 0 20px rgba(0, 255, 0, 0.5);
-    animation: inputGlow 1s infinite;
-}
-
-@keyframes inputGlow {
-    0%, 100% { border-color: #00ff00; }
-    50% { border-color: #00cc00; }
 }
 
 .password-submit {
     width: 100%;
     padding: 1rem;
-    font-size: 1.2rem;
-    font-weight: bold;
-    font-family: 'Orbitron', monospace;
+    border: 2px solid #00ff00;
     background: transparent;
     color: #00ff00;
-    border: 2px solid #00ff00;
+    font-family: 'Orbitron', monospace;
     cursor: pointer;
-    transition: all 0.3s;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    position: relative;
-    overflow: hidden;
-}
-
-.password-submit::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: #00ff00;
-    transition: left 0.3s;
-    z-index: -1;
-}
-
-.password-submit:hover::before {
-    left: 0;
 }
 
 .password-submit:hover {
-    color: #000000;
-    box-shadow: 0 0 30px #00ff00;
+    background: #00ff00;
+    color: black;
+}
+
+.password-error {
+    color: #ff3333;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.password-error.show {
+    animation: shake 0.4s;
+}
+
+@keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+}
+
+.terminal-text {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 0.7rem;
+}
+
+/* MAIN */
+.main-content {
+    display: none;
+}
+
+.main-content.unlocked {
+    display: block;
+}
+
+header {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* GAME RECTANGLES */
+.game-list {
+    max-width: 720px;
+    margin: 4rem auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.game-rect {
+    border: 2px solid #00ff00;
+    padding: 1.5rem;
+    background: rgba(0,15,0,0.85);
+    box-shadow:
+        inset 0 0 25px rgba(0,255,0,0.2),
+        0 0 30px rgba(0,255,0,0.4);
+    position: relative;
+}
+
+.game-rect::before {
+    content: '>';
+    position: absolute;
+    left: -1.2rem;
+    top: 1.4rem;
+    color: #00ff00;
+}
+
+.game-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 10px #00ff00;
+}
+
+.game-desc {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    color: #00cc00;
+}
+
+.launch-btn {
+    border: 2px solid #00ff00;
+    padding: 0.7rem 1.6rem;
+    text-decoration: none;
+    color: #00ff00;
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 0.2em;
+}
+
+.launch-btn:hover {
+    background: #00ff00;
+    color: black;
+    box-shadow: 0 0 25px #00ff00;
+}

@@ -7,86 +7,101 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Password Overlay -->
-    <div class="password-overlay" id="passwordOverlay">
-        <div class="password-container">
-            <div class="terminal-text">> SYSTEM.AUTHENTICATE_</div>
-            <h2>🔒 ACCESS DENIED</h2>
-            <p>ENTER SECURITY CODE TO PROCEED</p>
-            <input 
-                type="password" 
-                id="passwordInput" 
-                class="password-input" 
-                maxlength="4" 
-                placeholder="••••"
-                autocomplete="off"
-            >
-            <button class="password-submit" onclick="checkPassword()">[ AUTHENTICATE ]</button>
-            <div class="password-error" id="passwordError">ACCESS DENIED - INVALID CODE</div>
+
+<!-- PASSWORD OVERLAY -->
+<div class="password-overlay" id="passwordOverlay">
+    <div class="password-container">
+        <div class="terminal-text">> SYSTEM.AUTHENTICATE_</div>
+        <h2>🔒 ACCESS REQUIRED</h2>
+        <p>ENTER SECURITY CODE</p>
+
+        <input
+            type="password"
+            id="passwordInput"
+            class="password-input"
+            maxlength="4"
+            placeholder="••••"
+            autocomplete="off"
+        >
+
+        <button class="password-submit" onclick="checkPassword()">[ AUTHENTICATE ]</button>
+
+        <div class="password-error" id="passwordError" style="display:none;">
+            ACCESS DENIED — INVALID CODE
         </div>
     </div>
+</div>
 
-    <!-- Main Content -->
-    <div class="main-content" id="mainContent">
-        <header>
-            <h1>⚡ TERMINAL://GAMES</h1>
-            <p>UNAUTHORIZED ACCESS ZONE</p>
-        </header>
-        
-        <main>
-            <div class="game-grid">
-                <div class="game-card">
-                    <h3>SLOPE.EXE</h3>
-                    <p>> Roll down the digital slope and dodge system obstacles</p>
-                    <a href="slope.html" class="play-btn">[ EXECUTE ]</a>
+<!-- MAIN CONTENT -->
+<div class="main-content" id="mainContent">
+    <header>
+        <h1>⚡ TERMINAL://GAMES</h1>
+        <p>UNAUTHORIZED ACCESS ZONE</p>
+    </header>
+
+    <main>
+        <div class="game-list">
+
+            <div class="game-rect">
+                <div class="game-title">SLOPE.EXE</div>
+                <div class="game-desc">
+                    > EXECUTABLE: HIGH-SPEED REFLEX SIMULATION
                 </div>
-                
-                <div class="game-card">
-                    <h3>RAGDOLL_ARCHERS.EXE</h3>
-                    <p>> Physics-based archery combat with ragdoll mechanics</p>
-                    <a href="ragdoll-archers.html" class="play-btn">[ EXECUTE ]</a>
-                </div>
+                <a href="slope.html" class="launch-btn">[ EXECUTE ]</a>
             </div>
-        </main>
-    </div>
 
-    <script>
-        const CORRECT_PASSWORD = "1234";
+            <div class="game-rect">
+                <div class="game-title">RAGDOLL_ARCHERS.EXE</div>
+                <div class="game-desc">
+                    > EXECUTABLE: PHYSICS COMBAT MODULE
+                </div>
+                <a href="ragdoll-archers.html" class="launch-btn">[ EXECUTE ]</a>
+            </div>
 
-        if (sessionStorage.getItem('authenticated') === 'true') {
-            unlockSite();
-        }
+        </div>
+    </main>
+</div>
 
-        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkPassword();
-            }
-        });
+<script>
+const CORRECT_PASSWORD = "1234";
 
-        document.getElementById('passwordInput').focus();
+if (sessionStorage.getItem("authenticated") === "true") {
+    unlockSite();
+}
 
-        function checkPassword() {
-            const input = document.getElementById('passwordInput').value;
-            const errorDiv = document.getElementById('passwordError');
+document.getElementById("passwordInput").addEventListener("keydown", e => {
+    if (e.key === "Enter") checkPassword();
+});
 
-            if (input === CORRECT_PASSWORD) {
-                sessionStorage.setItem('authenticated', 'true');
-                unlockSite();
-            } else {
-                errorDiv.classList.add('show');
-                document.getElementById('passwordInput').value = '';
-                document.getElementById('passwordInput').focus();
+document.getElementById("passwordInput").focus();
 
-                setTimeout(() => {
-                    errorDiv.classList.remove('show');
-                }, 2000);
-            }
-        }
+function checkPassword() {
+    const input = document.getElementById("passwordInput").value;
+    const error = document.getElementById("passwordError");
 
-        function unlockSite() {
-            document.getElementById('passwordOverlay').classList.add('hidden');
-            document.getElementById('mainContent').classList.add('unlocked');
-        }
-    </script>
+    error.style.display = "none";
+    error.classList.remove("show");
+
+    if (input === CORRECT_PASSWORD) {
+        sessionStorage.setItem("authenticated", "true");
+        unlockSite();
+    } else {
+        error.style.display = "block";
+        error.classList.add("show");
+        document.getElementById("passwordInput").value = "";
+
+        setTimeout(() => {
+            error.classList.remove("show");
+            error.style.display = "none";
+        }, 2000);
+    }
+}
+
+function unlockSite() {
+    document.getElementById("passwordOverlay").classList.add("hidden");
+    document.getElementById("mainContent").classList.add("unlocked");
+}
+</script>
+
 </body>
 </html>
