@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERMINAL://GAMES_ACCESS</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TERMINAL://GAMES_ACCESS</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -15,16 +15,13 @@
         <h2>🔒 ACCESS REQUIRED</h2>
         <p>ENTER SECURITY CODE</p>
 
-        <input
-            type="password"
-            id="passwordInput"
-            class="password-input"
-            maxlength="4"
-            placeholder="••••"
-            autocomplete="off"
-        >
+        <input type="password" id="passwordInput"
+            class="password-input" maxlength="4"
+            placeholder="••••" autocomplete="off">
 
-        <button class="password-submit" onclick="checkPassword()">[ AUTHENTICATE ]</button>
+        <button class="password-submit" onclick="checkPassword()">
+            [ AUTHENTICATE ]
+        </button>
 
         <div class="password-error" id="passwordError" style="display:none;">
             ACCESS DENIED — INVALID CODE
@@ -32,34 +29,48 @@
     </div>
 </div>
 
+<!-- USERNAME OVERLAY -->
+<div class="username-overlay" id="usernameOverlay">
+    <div class="password-container">
+        <div class="terminal-text">> IDENTIFY_USER_</div>
+        <h2>ENTER USERNAME</h2>
+        <p>THIS ID WILL BE LOGGED</p>
+
+        <input type="text" id="usernameInput"
+            class="password-input" maxlength="12"
+            placeholder="USERNAME">
+
+        <button class="password-submit" onclick="saveUsername()">
+            [ CONFIRM IDENTITY ]
+        </button>
+    </div>
+</div>
+
 <!-- MAIN CONTENT -->
 <div class="main-content" id="mainContent">
-    <header>
-        <h1>⚡ TERMINAL://GAMES</h1>
-        <p>UNAUTHORIZED ACCESS ZONE</p>
-    </header>
+<header>
+    <h1>⚡ TERMINAL://GAMES</h1>
+    <p>AUTHORIZED USER SESSION</p>
+    <p id="userDisplay"></p>
+</header>
 
-    <main>
-        <div class="game-list">
+<main>
+<div class="game-list">
 
-            <div class="game-rect">
-                <div class="game-title">SLOPE.EXE</div>
-                <div class="game-desc">
-                    > EXECUTABLE: HIGH-SPEED REFLEX SIMULATION
-                </div>
-                <a href="slope.html" class="launch-btn">[ EXECUTE ]</a>
-            </div>
+<div class="game-rect">
+    <div class="game-title">SLOPE.EXE</div>
+    <div class="game-desc">> HIGH SPEED SYSTEM SIMULATION</div>
+    <a href="slope.html" class="launch-btn">[ EXECUTE ]</a>
+</div>
 
-            <div class="game-rect">
-                <div class="game-title">RAGDOLL_ARCHERS.EXE</div>
-                <div class="game-desc">
-                    > EXECUTABLE: PHYSICS COMBAT MODULE
-                </div>
-                <a href="ragdoll-archers.html" class="launch-btn">[ EXECUTE ]</a>
-            </div>
+<div class="game-rect">
+    <div class="game-title">RAGDOLL_ARCHERS.EXE</div>
+    <div class="game-desc">> PHYSICS COMBAT MODULE</div>
+    <a href="ragdoll-archers.html" class="launch-btn">[ EXECUTE ]</a>
+</div>
 
-        </div>
-    </main>
+</div>
+</main>
 </div>
 
 <script>
@@ -69,39 +80,45 @@ if (sessionStorage.getItem("authenticated") === "true") {
     unlockSite();
 }
 
-document.getElementById("passwordInput").addEventListener("keydown", e => {
-    if (e.key === "Enter") checkPassword();
-});
-
-document.getElementById("passwordInput").focus();
-
 function checkPassword() {
-    const input = document.getElementById("passwordInput").value;
-    const error = document.getElementById("passwordError");
-
+    const input = passwordInput.value;
+    const error = passwordError;
     error.style.display = "none";
-    error.classList.remove("show");
 
     if (input === CORRECT_PASSWORD) {
         sessionStorage.setItem("authenticated", "true");
         unlockSite();
     } else {
         error.style.display = "block";
-        error.classList.add("show");
-        document.getElementById("passwordInput").value = "";
-
-        setTimeout(() => {
-            error.classList.remove("show");
-            error.style.display = "none";
-        }, 2000);
+        passwordInput.value = "";
+        setTimeout(() => error.style.display = "none", 2000);
     }
 }
 
 function unlockSite() {
-    document.getElementById("passwordOverlay").classList.add("hidden");
-    document.getElementById("mainContent").classList.add("unlocked");
+    passwordOverlay.classList.add("hidden");
+
+    if (!localStorage.getItem("username")) {
+        usernameOverlay.style.display = "flex";
+    } else {
+        enterSystem();
+    }
+}
+
+function saveUsername() {
+    const name = usernameInput.value.trim();
+    if (name.length < 3) return;
+    localStorage.setItem("username", name.toUpperCase());
+    enterSystem();
+}
+
+function enterSystem() {
+    usernameOverlay.style.display = "none";
+    mainContent.classList.add("unlocked");
+    userDisplay.textContent = "> USER: " + localStorage.getItem("username");
 }
 </script>
 
 </body>
 </html>
+

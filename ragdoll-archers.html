@@ -1,174 +1,66 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en">
 <head>
-    <script src="https://cdn.jsdelivr.net/gh/laparda14/Ragdoll-archers@62504c9570ea720c6367e7debe1e110c68f77c2d/vs/gameloader-helper.js"></script>
-    <meta charset="utf-8">
-    <script src=""></script>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Ragdoll Archers</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bubbls/ruffle@04dd5345a30d6ebf4b0e2cc385568750cd56ed5a/styyyle.css">
-    <style>
-        body {
-            margin: 0;
-            background: #000;
-        }
-        .back-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background: rgba(0, 255, 0, 0.2);
-            border: 2px solid #00ff00;
-            color: #00ff00;
-            text-decoration: none;
-            font-family: 'Orbitron', monospace;
-            transition: all 0.3s;
-            z-index: 9999;
-        }
-        .back-btn:hover {
-            background: #00ff00;
-            color: #000;
-        }
-        .save-indicator {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            background: rgba(0, 255, 0, 0.2);
-            border: 2px solid #00ff00;
-            color: #00ff00;
-            font-family: 'Orbitron', monospace;
-            font-size: 14px;
-            z-index: 9999;
-            display: none;
-        }
-        .save-indicator.active {
-            display: block;
-            animation: fadeInOut 2s;
-        }
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
-        }
-    </style>
+<meta charset="UTF-8">
+<title>RAGDOLL_ARCHERS.EXE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    margin: 0;
+    background: black;
+    overflow: hidden;
+}
+
+.back-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    color: #00ff00;
+    border: 2px solid #00ff00;
+    padding: 8px 14px;
+    text-decoration: none;
+    font-family: monospace;
+    z-index: 10;
+}
+</style>
 </head>
+
 <body>
-    <script>
-        // Redirect if not authenticated
-        if (sessionStorage.getItem('authenticated') !== 'true') {
-            window.location.href = 'index.html';
-        }
-    </script>
 
-    <a href="index.html" class="back-btn">← BACK</a>
-    <div class="save-indicator" id="saveIndicator">💾 Progress Saved</div>
+<script>
+/* AUTH CHECK */
+if (sessionStorage.getItem("authenticated") !== "true") {
+    window.location.href = "index.html";
+}
 
-    <div id="unity-container" class="unity-desktop">
-        <canvas id="unity-canvas"></canvas>
-    </div>
-    
-    <div id="loading-cover">
-        <div id="unity-loading-bar">
-            <div id="unity-logo"><img src="logo.jpeg"></div>
-            <div class="progress-spinner-container">
-                <div class="spinner-left"><img src="spinner.png"></div>
-                <div id="unity-progress-bar-empty">
-                    <div id="unity-progress-bar-full"></div>
-                </div>
-                <div class="spinner-right"><img src="spinner.png"></div>
-            </div>
-        </div>
-    </div>
+const username = localStorage.getItem("username") || "UNKNOWN";
 
-    <script>
-        const buildUrl = "Build";
-        const loaderUrl = "https://cdn.jsdelivr.net/gh/bubbls/ruffle@7117cc5006472d782b65d96abd375597d6273242/v11121212.js";
-        const config = {
-            dataUrl: "https://cdn.jsdelivr.net/gh/bubbls/ruffle@04dd5345a30d6ebf4b0e2cc385568750cd56ed5a/6697b6deba8b617c67b69c55dcd07cb1.data.unityweb",
-            frameworkUrl: "https://cdn.jsdelivr.net/gh/bubbls/ruffle@04dd5345a30d6ebf4b0e2cc385568750cd56ed5a/0be3c3ee7115b26e1ae28e643afdf1f2.js.unityweb",
-            codeUrl: "https://cdn.jsdelivr.net/gh/bubbls/ruffle@04dd5345a30d6ebf4b0e2cc385568750cd56ed5a/b3397c29f6878557c1c614cbf9e196ea.wasm.unityweb",
-            streamingAssetsUrl: "StreamingAssets",
-            companyName: "Ericetto",
-            productName: "Ragdoll Archers",
-            productVersion: "0.1",
-        };
+/* USER-SPECIFIC SAVE SLOT */
+const saveKey = `ragdoll_save_${username}`;
 
-        const container = document.querySelector("#unity-container");
-        const canvas = document.querySelector("#unity-canvas");
-        const loadingCover = document.querySelector("#loading-cover");
-        const progressBarEmpty = document.querySelector("#unity-progress-bar-empty");
-        const progressBarFull = document.querySelector("#unity-progress-bar-full");
-        
-        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            container.className = "unity-mobile";
-        }
+let userSave = JSON.parse(localStorage.getItem(saveKey)) || {
+    sessions: 0,
+    lastPlayed: null
+};
 
-        loadingCover.style.display = "";
-        
-        const unityLoader = document.createElement("script");
-        unityLoader.src = loaderUrl;
-        unityLoader.onload = () => {
-            createUnityInstance(canvas, config, (progress) => {
-                progressBarEmpty.style.display = "";
-                progressBarFull.style.width = `${100 * progress}%`;
-            }).then((unityInstance) => {
-                window.unityInstance = unityInstance;
-                loadingCover.style.display = "none";
-                
-                // Unity autosave is enabled by default via IndexedDB
-                // Show save indicator periodically
-                setInterval(() => {
-                    if (document.hasFocus()) {
-                        showSaveIndicator();
-                    }
-                }, 30000); // Show save indicator every 30 seconds
-                
-            }).catch((message) => {
-                alert(message);
-            });
-        };
-        
-        document.body.appendChild(unityLoader);
-        
-        document.addEventListener("pointerdown", () => {
-            container.focus();
-            window.focus();
-            canvas.focus();
-        });
+userSave.sessions++;
+userSave.lastPlayed = new Date().toISOString();
+localStorage.setItem(saveKey, JSON.stringify(userSave));
 
-        // Auto-save on page unload (when leaving the game)
-        window.addEventListener('beforeunload', () => {
-            // Unity automatically saves to IndexedDB
-            // This just ensures it happens before leaving
-            if (window.unityInstance) {
-                // Unity handles this internally
-            }
-        });
+console.log("RAGDOLL SAVE:", userSave);
+</script>
 
-        // Show save indicator
-        function showSaveIndicator() {
-            const indicator = document.getElementById('saveIndicator');
-            indicator.classList.add('active');
-            setTimeout(() => {
-                indicator.classList.remove('active');
-            }, 2000);
-        }
+<a href="index.html" class="back-btn">← BACK</a>
 
-        // Periodically backup save data to localStorage as well
-        setInterval(() => {
-            try {
-                // Unity uses IndexedDB, but we can create a backup timestamp
-                const saveBackup = {
-                    game: 'Ragdoll Archers',
-                    lastPlayed: new Date().toISOString(),
-                    sessionTime: Date.now()
-                };
-                localStorage.setItem('ragdollArchersSave', JSON.stringify(saveBackup));
-            } catch (e) {
-                console.log('Backup save failed:', e);
-            }
-        }, 60000); // Backup every minute
-    </script>
+<!-- UNITY GAME -->
+<iframe
+    src="https://games.cdn.famobi.com/html5games/r/ragdoll-archers/v1/?fg_domain=play.famobi.com&fg_aid=A1000-1&fg_uid=fa-test-6c26e6f5-79b5-49f7-b194-2ab2d7f48e04&fg_pid=4a1d79dd-5d78-4c5c-b7f7-5f92b02f4f26"
+    width="100%"
+    height="100%"
+    frameborder="0"
+    allowfullscreen>
+</iframe>
+
 </body>
 </html>
