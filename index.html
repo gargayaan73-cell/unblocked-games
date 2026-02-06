@@ -3,21 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TERMINAL://GAMES_ACCESS</title>
+<title>TERMINAL://GAME_HUB</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <!-- PASSWORD OVERLAY -->
 <div class="password-overlay" id="passwordOverlay">
     <div class="password-container">
         <div class="terminal-text">> SYSTEM.AUTHENTICATE_</div>
-        <h2>🔒 ACCESS REQUIRED</h2>
+        <h2>ACCESS REQUIRED</h2>
         <p>ENTER SECURITY CODE</p>
 
-        <input type="password" id="passwordInput"
-            class="password-input" maxlength="4"
-            placeholder="••••" autocomplete="off">
+        <input
+            type="password"
+            id="passwordInput"
+            class="password-input"
+            maxlength="4"
+            placeholder="••••"
+            autocomplete="off"
+        >
 
         <button class="password-submit" onclick="checkPassword()">
             [ AUTHENTICATE ]
@@ -36,9 +42,14 @@
         <h2>ENTER USERNAME</h2>
         <p>THIS ID WILL BE LOGGED</p>
 
-        <input type="text" id="usernameInput"
-            class="password-input" maxlength="12"
-            placeholder="USERNAME">
+        <input
+            type="text"
+            id="usernameInput"
+            class="password-input"
+            maxlength="12"
+            placeholder="USERNAME"
+            autocomplete="off"
+        >
 
         <button class="password-submit" onclick="saveUsername()">
             [ CONFIRM IDENTITY ]
@@ -48,75 +59,105 @@
 
 <!-- MAIN CONTENT -->
 <div class="main-content" id="mainContent">
+
 <header>
-    <h1>⚡ TERMINAL://GAMES</h1>
+    <h1>⚡ TERMINAL://GAME_HUB</h1>
     <p>AUTHORIZED USER SESSION</p>
     <p id="userDisplay"></p>
 </header>
 
 <main>
-<div class="game-list">
+    <div class="game-list">
 
-<div class="game-rect">
-    <div class="game-title">SLOPE.EXE</div>
-    <div class="game-desc">> HIGH SPEED SYSTEM SIMULATION</div>
-    <a href="slope.html" class="launch-btn">[ EXECUTE ]</a>
-</div>
+        <!-- SLOPE -->
+        <div class="game-rect">
+            <div class="game-title">SLOPE.EXE</div>
+            <div class="game-desc">
+                > HIGH-SPEED SYSTEM SIMULATION
+            </div>
+            <a href="slope.html" class="launch-btn">
+                [ EXECUTE ]
+            </a>
+        </div>
 
-<div class="game-rect">
-    <div class="game-title">RAGDOLL_ARCHERS.EXE</div>
-    <div class="game-desc">> PHYSICS COMBAT MODULE</div>
-    <a href="ragdoll-archers.html" class="launch-btn">[ EXECUTE ]</a>
-</div>
+        <!-- ARCHERY GAME -->
+        <div class="game-rect">
+            <div class="game-title">ARCHER_SIM.EXE</div>
+            <div class="game-desc">
+                > RAGDOLL ARCHERY COMBAT MODULE
+            </div>
+            <a href="archery.html" class="launch-btn">
+                [ EXECUTE ]
+            </a>
+        </div>
 
-</div>
+    </div>
 </main>
+
 </div>
 
 <script>
+/* ===== CONFIG ===== */
 const CORRECT_PASSWORD = "1234";
 
+/* AUTO-UNLOCK IF SESSION EXISTS */
 if (sessionStorage.getItem("authenticated") === "true") {
     unlockSite();
 }
 
+/* PASSWORD */
 function checkPassword() {
     const input = passwordInput.value;
-    const error = passwordError;
-    error.style.display = "none";
+    passwordError.style.display = "none";
 
     if (input === CORRECT_PASSWORD) {
         sessionStorage.setItem("authenticated", "true");
         unlockSite();
     } else {
-        error.style.display = "block";
+        passwordError.style.display = "block";
         passwordInput.value = "";
-        setTimeout(() => error.style.display = "none", 2000);
+        setTimeout(() => {
+            passwordError.style.display = "none";
+        }, 2000);
     }
 }
 
+/* AFTER PASSWORD */
 function unlockSite() {
     passwordOverlay.classList.add("hidden");
 
     if (!localStorage.getItem("username")) {
         usernameOverlay.style.display = "flex";
+        usernameInput.focus();
     } else {
         enterSystem();
     }
 }
 
+/* USERNAME */
 function saveUsername() {
     const name = usernameInput.value.trim();
     if (name.length < 3) return;
+
     localStorage.setItem("username", name.toUpperCase());
     enterSystem();
 }
 
+/* ENTER HUB */
 function enterSystem() {
     usernameOverlay.style.display = "none";
     mainContent.classList.add("unlocked");
-    userDisplay.textContent = "> USER: " + localStorage.getItem("username");
+    userDisplay.textContent =
+        "> USER: " + localStorage.getItem("username");
 }
+
+/* ENTER KEY SUPPORT */
+passwordInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") checkPassword();
+});
+usernameInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") saveUsername();
+});
 </script>
 
 </body>
