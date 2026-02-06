@@ -9,19 +9,21 @@
 body {
     margin: 0;
     background: black;
-    overflow: hidden;
+    color: #00ff00;
+    font-family: monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
 }
 
-.back-btn {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    color: #00ff00;
+.terminal {
     border: 2px solid #00ff00;
-    padding: 8px 14px;
-    text-decoration: none;
-    font-family: monospace;
-    z-index: 10;
+    padding: 2rem;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 0 30px #00ff00;
+    line-height: 1.6;
 }
 </style>
 </head>
@@ -33,34 +35,44 @@ body {
 if (sessionStorage.getItem("authenticated") !== "true") {
     window.location.href = "index.html";
 }
-
-const username = localStorage.getItem("username") || "UNKNOWN";
-
-/* USER-SPECIFIC SAVE SLOT */
-const saveKey = `ragdoll_save_${username}`;
-
-let userSave = JSON.parse(localStorage.getItem(saveKey)) || {
-    sessions: 0,
-    lastPlayed: null
-};
-
-userSave.sessions++;
-userSave.lastPlayed = new Date().toISOString();
-localStorage.setItem(saveKey, JSON.stringify(userSave));
-
-console.log("RAGDOLL SAVE:", userSave);
 </script>
 
-<a href="index.html" class="back-btn">← BACK</a>
+<div class="terminal" id="terminal"></div>
 
-<!-- UNITY GAME -->
-<iframe
-    src="https://games.cdn.famobi.com/html5games/r/ragdoll-archers/v1/?fg_domain=play.famobi.com&fg_aid=A1000-1&fg_uid=fa-test-6c26e6f5-79b5-49f7-b194-2ab2d7f48e04&fg_pid=4a1d79dd-5d78-4c5c-b7f7-5f92b02f4f26"
-    width="100%"
-    height="100%"
-    frameborder="0"
-    allowfullscreen>
-</iframe>
+<script>
+const username = localStorage.getItem("username") || "UNKNOWN";
+const terminal = document.getElementById("terminal");
+
+const lines = [
+    "> INITIALIZING ragdoll_archers.exe",
+    "> CHECKING USER CREDENTIALS...",
+    "> USER VERIFIED: " + username,
+    "> CONNECTING TO REMOTE SERVER...",
+    "> BYPASSING FIREWALL...",
+    "> LOADING COMBAT MODULE...",
+    "> EXECUTION APPROVED",
+    "",
+    "> LAUNCHING..."
+];
+
+let i = 0;
+
+function typeLine() {
+    if (i < lines.length) {
+        terminal.innerHTML += lines[i] + "<br>";
+        i++;
+        setTimeout(typeLine, 600);
+    } else {
+        setTimeout(() => {
+            window.location.href =
+                "https://www.crazygames.com/game/ragdoll-archers";
+        }, 1200);
+    }
+}
+
+typeLine();
+</script>
 
 </body>
 </html>
+
