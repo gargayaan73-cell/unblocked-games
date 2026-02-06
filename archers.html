@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ARCHER_SIM.EXE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    margin: 0;
+    background: black;
+    color: #00ff00;
+    font-family: monospace;
+    overflow: hidden;
+}
+#ui {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+}
+#upgradeMenu {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: 1px solid #00ff00;
+    padding: 10px;
+}
+button {
+    background: black;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 5px;
+    margin-top: 4px;
+    cursor: pointer;
+}
+button:hover {
+    background: #00ff00;
+    color: black;
+}
+#gameOver {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+</style>
+</head>
+
+<body>
+
+<script>
+if (sessionStorage.getItem("authenticated") !== "true") {
+    location.href = "index.html";
+}
+const username = localStorage.getItem("username") || "UNKNOWN";
+const saveKey = "archer_save_" + username;
+</script>
+
+<canvas id="c"></canvas>
+
+<div id="ui">
+USER: <b id="user"></b><br>
+WAVE: <span id="wave">1</span><br>
+SCORE: <span id="score">0</span><br>
+GOLD: <span id="gold">0</span><br>
+HP: <span id="hp">100</span>
+</div>
+
+<div id="upgradeMenu">
+<b>UPGRADES</b><br>
+<button onclick="upgrade('power')">POWER</button><br>
+<button onclick="upgrade('accuracy')">ACCURACY</button><br>
+<button onclick="upgrade('health')">MAX HP</button>
+</div>
+
+<div id="gameOver">
+<h1>SYSTEM FAILURE</h1>
+<p>YOU DIED</p>
+<button onclick="location.reload()">REBOOT</button>
+<a href="index.html" style="color:#0f0;margin-top:10px">BACK TO TERMINAL</a>
+</div>
+
+<script>
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+document.getElementById("user").textContent = username;
+
+/* SAVE */
+let save = JSON.parse(localStorage.getItem(saveKey)) || {
+    score: 0,
+    gold: 0,
+    power: 1,
+    accuracy: 1,
+    maxHp: 100
+};
+
+let score = save.score;
+let gold = save.gold;
+let hp = save.maxHp;
+let wave = 1;
+
+function saveGame() {
+    save.score = score;
+    save.gold = gold;
+    localStorage.setItem(saveKey, JSON.stringify(save));
+}
+
+/* PLAYER */
+const player = { x: 100, y: canvas.height - 120 };
+
+/* ARRAYS */
+let arrows = [];
+let enemies = [];
+let enemyArrows = [];
+
+/* INPUT */
+let mx = 0, my = 0;
+canvas.onmousemove = e => { mx = e.clientX; my = e.clientY; };
+canvas.onclick = () => shoot();
+
+/* SHOOT */
+function shoot() {
+    const dx = mx - player.x;
+    const dy = my - player.y;
+    arrows.push({
+        x: player.x,
+        y: player.y,
+        vx: dx * 0.04 * save.power + (Math.random()-0.5)*save.accuracy,
+        vy: dy * 0.04 * save.power,
+        life: 200
+    });
+}
+
+/* ENEMIES */
+function spawnWave() {
+    for (let i=0;i<wave+1;i++) {
+        enemies.push({
+            x: canvas.width - 100,
+            y: canvas.height - 120,
+            vx: -1,
+            vy: 0,
+            hp: 3 + wave
+        });
+    }
+}
+spawnWave();
+
+/* UPGRADES */
+function upgrade(type) {
+    if (gold < 15) return;
+    gold -= 15;
+    if (type === "power") save.power++;
+    if (type === "accuracy") save.accuracy++;
+    if (type === "health") {
+        save.maxHp += 20;
+        hp = save.maxHp;
+    }
+    saveGame();
+}
+
+/* LOOP */
+function loop() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // PLAYER
+    ctx.fillStyle = "#0f0";
+    ctx.fillRect(player.x-10, player.y-40, 20, 40);
+
+    // PLAYER ARROWS
+    arrows.forEach(a=>{
+        a.vy += 0.15;
+        a.x += a.vx;
+        a.y += a.vy;
+        a.life--;
+        ctx.fillRect(a.x,a.y,8,2);
+    });
+    arrows = arrows.filter(a=>a.life>0);
+
+    // ENEMIES
+    enemies.forEach(e=>{
+        e.x += e.vx;
+        ctx.fillStyle = "#f33";
+        ctx.fillRect(e.x-10,e.y-40,20,40);
+
+        // ENEMY SHOOT
+        if (Math.random()<0.01) {
+            enemyArrows.push({
+                x:e.x,y:e.y,
+                vx:-4,vy:-2
+            });
+        }
+
+        arrows.forEach(a=>{
+            if (Math.abs(a.x-e.x)<15 && Math.abs(a.y-e.y)<40) {
+                e.hp--;
+                a.life=0;
+                if (e.hp<=0) {
+                    score+=10;
+                    gold+=5;
+                }
+            }
+        });
+    });
+    enemies = enemies.filter(e=>e.hp>0);
+
+    // ENEMY ARROWS
+    enemyArrows.forEach(a=>{
+        a.vy+=0.15;
+        a.x+=a.vx;
+        a.y+=a.vy;
+        ctx.fillStyle="#ff0";
+        ctx.fillRect(a.x,a.y,6,2);
+
+        if (Math.abs(a.x-player.x)<15 && Math.abs(a.y-player.y)<40) {
+            hp -= 10;
+            a.x = -999;
+        }
+    });
+    enemyArrows = enemyArrows.filter(a=>a.x>-50);
+
+    // NEXT WAVE
+    if (enemies.length===0) {
+        wave++;
+        spawnWave();
+    }
+
+    // UI
+    scoreEl.textContent = score;
+    goldEl.textContent = gold;
+    waveEl.textContent = wave;
+    hpEl.textContent = hp;
+
+    saveGame();
+
+    if (hp<=0) {
+        document.getElementById("gameOver").style.display="flex";
+        return;
+    }
+
+    requestAnimationFrame(loop);
+}
+
+const scoreEl=document.getElementById("score");
+const goldEl=document.getElementById("gold");
+const waveEl=document.getElementById("wave");
+const hpEl=document.getElementById("hp");
+
+loop();
+
+window.onresize=()=>{
+    canvas.width=innerWidth;
+    canvas.height=innerHeight;
+};
+</script>
+
+</body>
+</html>
+
+
+
