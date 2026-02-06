@@ -46,6 +46,12 @@
             margin-top: 5px;
         }
 
+        .high-score {
+            font-size: 20px;
+            color: #ffaa00;
+            margin-top: 5px;
+        }
+
         .game-over {
             position: absolute;
             top: 50%;
@@ -70,6 +76,23 @@
             font-size: 32px;
             color: #00ff88;
             margin: 20px 0;
+        }
+
+        .game-over .new-high-score {
+            font-size: 24px;
+            color: #ffaa00;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .game-over .new-high-score.show {
+            display: block;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         .restart-btn {
@@ -121,11 +144,19 @@
     </style>
 </head>
 <body>
+    <script>
+        // Redirect if not authenticated
+        if (sessionStorage.getItem('authenticated') !== 'true') {
+            window.location.href = 'index.html';
+        }
+    </script>
+
     <a href="index.html" class="back-btn">← Back</a>
     
     <div class="hud">
         <div class="score">Score: <span id="score">0</span></div>
         <div class="speed">Speed: <span id="speed">1.0</span>x</div>
+        <div class="high-score">High Score: <span id="highScore">0</span></div>
     </div>
 
     <div class="instructions">
@@ -135,6 +166,7 @@
     <div class="game-over" id="gameOver">
         <h2>Game Over!</h2>
         <div class="final-score">Final Score: <span id="finalScore">0</span></div>
+        <div class="new-high-score" id="newHighScore">🏆 NEW HIGH SCORE! 🏆</div>
         <button class="restart-btn" onclick="restartGame()">Play Again</button>
         <br><br>
         <a href="index.html" class="restart-btn" style="display: inline-block; text-decoration: none;">Back to Menu</a>
@@ -154,6 +186,10 @@
         let score = 0;
         let speed = 5;
         let baseSpeed = 5;
+        
+        // Load high score from localStorage
+        let highScore = parseInt(localStorage.getItem('slopeHighScore')) || 0;
+        document.getElementById('highScore').textContent = highScore;
 
         // Player (ball)
         const player = {
@@ -447,8 +483,19 @@
         function gameOver() {
             gameRunning = false;
             createParticles(player.x, player.y, '#ff4444');
+            
+            const finalScore = Math.floor(score);
+            
+            // Check and save high score
+            if (finalScore > highScore) {
+                highScore = finalScore;
+                localStorage.setItem('slopeHighScore', highScore);
+                document.getElementById('highScore').textContent = highScore;
+                document.getElementById('newHighScore').classList.add('show');
+            }
+            
             document.getElementById('gameOver').style.display = 'block';
-            document.getElementById('finalScore').textContent = Math.floor(score);
+            document.getElementById('finalScore').textContent = finalScore;
         }
 
         // Restart game
@@ -462,6 +509,7 @@
             particles = [];
             obstacleTimer = 0;
             document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('newHighScore').classList.remove('show');
             gameLoop();
         }
 
