@@ -4,154 +4,212 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TERMINAL://GAME_HUB</title>
-<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+    margin: 0;
+    background: black;
+    color: #00ff00;
+    font-family: monospace;
+}
+
+/* OVERLAYS */
+.password-overlay,
+.username-overlay {
+    position: fixed;
+    inset: 0;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.hidden {
+    display: none;
+}
+
+.password-container {
+    border: 1px solid #00ff00;
+    padding: 30px;
+    text-align: center;
+    width: 300px;
+}
+
+.password-input {
+    width: 100%;
+    background: black;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px;
+    margin-top: 10px;
+    font-family: monospace;
+}
+
+.password-submit {
+    margin-top: 15px;
+    background: black;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.password-submit:hover {
+    background: #00ff00;
+    color: black;
+}
+
+.password-error {
+    margin-top: 10px;
+    color: red;
+}
+
+/* MAIN */
+.main-content {
+    display: none;
+    padding: 20px;
+}
+
+.main-content.unlocked {
+    display: block;
+}
+
+header {
+    border-bottom: 1px solid #00ff00;
+    margin-bottom: 20px;
+}
+
+.game-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.game-rect {
+    border: 1px solid #00ff00;
+    padding: 20px;
+}
+
+.game-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.game-desc {
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.launch-btn {
+    display: inline-block;
+    text-decoration: none;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    padding: 8px 12px;
+}
+
+.launch-btn:hover {
+    background: #00ff00;
+    color: black;
+}
+</style>
 </head>
 
 <body>
 
-<!-- PASSWORD OVERLAY -->
+<!-- PASSWORD -->
 <div class="password-overlay" id="passwordOverlay">
     <div class="password-container">
-        <div class="terminal-text">> SYSTEM.AUTHENTICATE_</div>
-        <h2>ACCESS REQUIRED</h2>
-        <p>ENTER SECURITY CODE</p>
-
-        <input
-            type="password"
-            id="passwordInput"
-            class="password-input"
-            maxlength="4"
-            placeholder="••••"
-            autocomplete="off"
-        >
-
-        <button class="password-submit" onclick="checkPassword()">
-            [ AUTHENTICATE ]
-        </button>
-
-        <div class="password-error" id="passwordError" style="display:none;">
-            ACCESS DENIED — INVALID CODE
+        <div>> SYSTEM.AUTHENTICATE_</div>
+        <h3>ENTER ACCESS CODE</h3>
+        <input id="passwordInput" class="password-input" type="password" maxlength="4">
+        <button class="password-submit" onclick="checkPassword()">[ AUTHENTICATE ]</button>
+        <div id="passwordError" class="password-error" style="display:none;">
+            INVALID CODE
         </div>
     </div>
 </div>
 
-<!-- USERNAME OVERLAY -->
-<div class="username-overlay" id="usernameOverlay">
+<!-- USERNAME -->
+<div class="username-overlay hidden" id="usernameOverlay">
     <div class="password-container">
-        <div class="terminal-text">> IDENTIFY_USER_</div>
-        <h2>ENTER USERNAME</h2>
-        <p>THIS ID WILL BE LOGGED</p>
-
-        <input
-            type="text"
-            id="usernameInput"
-            class="password-input"
-            maxlength="12"
-            placeholder="USERNAME"
-            autocomplete="off"
-        >
-
-        <button class="password-submit" onclick="saveUsername()">
-            [ CONFIRM IDENTITY ]
-        </button>
+        <div>> IDENTIFY_USER_</div>
+        <h3>ENTER USERNAME</h3>
+        <input id="usernameInput" class="password-input" type="text" maxlength="12">
+        <button class="password-submit" onclick="saveUsername()">[ CONFIRM ]</button>
     </div>
 </div>
 
-<!-- MAIN CONTENT -->
+<!-- MAIN HUB -->
 <div class="main-content" id="mainContent">
 
 <header>
-    <h1>⚡ TERMINAL://GAME_HUB</h1>
-    <p>AUTHORIZED USER SESSION</p>
+    <h1>TERMINAL://GAME_HUB</h1>
     <p id="userDisplay"></p>
 </header>
 
-<main>
-    <div class="game-list">
+<div class="game-list">
 
-        <!-- SLOPE -->
-        <div class="game-rect">
-            <div class="game-title">SLOPE.EXE</div>
-            <div class="game-desc">
-                > HIGH-SPEED SYSTEM SIMULATION
-            </div>
-            <a href="slope.html" class="launch-btn">
-                [ EXECUTE ]
-            </a>
-        </div>
-
-        <!-- ARCHERY GAME -->
-        <div class="game-rect">
-            <div class="game-title">ARCHER_SIM.EXE</div>
-            <div class="game-desc">
-                > RAGDOLL ARCHERY COMBAT MODULE
-            </div>
-            <a href="archery.html" class="launch-btn">
-                [ EXECUTE ]
-            </a>
-        </div>
-
+    <!-- SLOPE -->
+    <div class="game-rect">
+        <div class="game-title">SLOPE.EXE</div>
+        <div class="game-desc">> HIGH SPEED SIMULATION</div>
+        <a href="slope.html" class="launch-btn">[ EXECUTE ]</a>
     </div>
-</main>
 
+    <!-- ARCHERY GAME -->
+    <div class="game-rect">
+        <div class="game-title">ARCHER_SIM.EXE</div>
+        <div class="game-desc">> RAGDOLL ARCHERY COMBAT MODULE</div>
+        <a href="archers.html" class="launch-btn">[ EXECUTE ]</a>
+    </div>
+
+</div>
 </div>
 
 <script>
-/* ===== CONFIG ===== */
 const CORRECT_PASSWORD = "1234";
 
-/* AUTO-UNLOCK IF SESSION EXISTS */
 if (sessionStorage.getItem("authenticated") === "true") {
     unlockSite();
 }
 
-/* PASSWORD */
 function checkPassword() {
-    const input = passwordInput.value;
     passwordError.style.display = "none";
-
-    if (input === CORRECT_PASSWORD) {
+    if (passwordInput.value === CORRECT_PASSWORD) {
         sessionStorage.setItem("authenticated", "true");
         unlockSite();
     } else {
         passwordError.style.display = "block";
         passwordInput.value = "";
-        setTimeout(() => {
-            passwordError.style.display = "none";
-        }, 2000);
     }
 }
 
-/* AFTER PASSWORD */
 function unlockSite() {
     passwordOverlay.classList.add("hidden");
 
     if (!localStorage.getItem("username")) {
-        usernameOverlay.style.display = "flex";
-        usernameInput.focus();
+        usernameOverlay.classList.remove("hidden");
     } else {
-        enterSystem();
+        enterHub();
     }
 }
 
-/* USERNAME */
 function saveUsername() {
     const name = usernameInput.value.trim();
     if (name.length < 3) return;
-
     localStorage.setItem("username", name.toUpperCase());
-    enterSystem();
+    enterHub();
 }
 
-/* ENTER HUB */
-function enterSystem() {
-    usernameOverlay.style.display = "none";
+function enterHub() {
+    usernameOverlay.classList.add("hidden");
     mainContent.classList.add("unlocked");
     userDisplay.textContent =
         "> USER: " + localStorage.getItem("username");
 }
 
-/* ENTER KEY SUPPORT */
 passwordInput.addEventListener("keydown", e => {
     if (e.key === "Enter") checkPassword();
 });
@@ -162,4 +220,3 @@ usernameInput.addEventListener("keydown", e => {
 
 </body>
 </html>
-
